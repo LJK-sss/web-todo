@@ -1,4 +1,4 @@
-// 待办事项 V2.0 · 数据驱动重构 + 筛选 + 持久化（第二轮）
+// 待办事项 V2.0 · 数据驱动重构 + 筛选 + 持久化
 // 口诀：改数据 → 保存 → 重渲染，三个操作都走同一条路
 
 const KEY = 'todos';
@@ -22,29 +22,32 @@ function load() {
   const raw = localStorage.getItem(KEY);
   if (raw === null) return [];
   try {
-    const data = JSON.parse(raw);   // 存过 → 解析
-    return Array.isArray(data) ? data : [];   // 解析出来不是数组就丢弃
+    const data = JSON.parse(raw);
+    return Array.isArray(data) ? data : [];
   } catch (e) {
-    return [];                      // 内容坏了 → 当没存过
+    return [];
   }
 }
 
+// 添加：生成新数组，不改原数组
 function addTodo(text) {
   const value = text.trim();
-  if (value === '') return;                              // 空输入/纯空格不添加
-  if (todos.some(t => t.text === value)) return;         // 重复内容不添加
+  if (value === '') return;
+  if (todos.some(t => t.text === value)) return;
 
   todos = [...todos, { id: Date.now(), text: value, completed: false }];
   save();
   render();
 }
 
-function removeTodo(id) {
+// 删除：filter 留下不等于这条 id 的
+function deleteTodo(id) {
   todos = todos.filter(t => t.id !== id);
   save();
   render();
 }
 
+// 切换：map + 展开，只换匹配的那一条
 function toggleTodo(id) {
   todos = todos.map(t =>
     t.id === id ? { ...t, completed: !t.completed } : t);
@@ -78,11 +81,12 @@ function render() {
 
     const span = document.createElement('span');
     span.className = 'todo-text';
-    span.textContent = t.text;      // 走文本通道，输入里的标签不会被解析
+    span.textContent = t.text;
 
     const btn = document.createElement('button');
     btn.className = 'todo-remove';
     btn.type = 'button';
+    btn.dataset.action = 'delete';
     btn.textContent = '删除';
 
     li.appendChild(span);
@@ -100,15 +104,16 @@ function render() {
   });
 }
 
-list.addEventListener('click', e => {
-  const li = e.target.closest('.todo-item');
-  if (!li) return;
-  const id = Number(li.dataset.id);
-
-  if (e.target.closest('.todo-remove')) {
-    e.stopPropagation();            // 点删除不要顺带切换完成态
-    removeTodo(id);
-    return;
+// 事件委托：整个列表只挂一个监听，条目每次重画也不用重新绑
+list.addEventListener('click', (e) => {
+  if (!(e.target instanceof Element)) return;
+  const item = e.target.closest('li');
+  if (!item || !list.contains(item)) return;
+  const id = item.dataset.id;
+  if (!id) return;
+  const delBtn = e.target.closest('[data-action="delete"]');
+  if (delBtn && item.contains(delBtn)) {
+    deleteTodo(id);
   }
   toggleTodo(id);
 });

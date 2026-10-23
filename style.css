@@ -146,3 +146,10 @@ body {
   background: #fef2f2;
   border-color: #fecaca;
 }
+
+.todo-clear:disabled {
+  color: #9ca3af;
+  background: #f3f4f6;
+  border-color: #e5e7eb;
+  cursor: not-allowed;
+}
