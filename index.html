@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>待办事项 V2.0</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+
+  <div class="todo-app">
+    <h1>待办事项</h1>
+
+    <form class="todo-form" id="todoForm">
+      <input class="todo-input" id="todoInput" type="text" placeholder="输入待办事项，回车添加" autocomplete="off">
+      <button class="todo-add" type="submit">添加</button>
+    </form>
+
+    <p class="todo-empty" id="todoEmpty">还没有待办，先添加一条吧。</p>
+
+    <ul class="todo-list" id="todoList"></ul>
+
+    <p class="todo-count" id="todoCount">共 0 条</p>
+
+    <div class="todo-bar">
+      <button class="todo-filter" type="button" data-filter="all">全部</button>
+      <button class="todo-filter" type="button" data-filter="active">未完成</button>
+      <button class="todo-filter" type="button" data-filter="done">已完成</button>
+      <button class="todo-clear" id="clearBtn" type="button">清除已完成</button>
+    </div>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>
