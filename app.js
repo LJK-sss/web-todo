@@ -109,11 +109,12 @@ list.addEventListener('click', (e) => {
   if (!(e.target instanceof Element)) return;
   const item = e.target.closest('li');
   if (!item || !list.contains(item)) return;
-  const id = item.dataset.id;
+  const id = Number(item.dataset.id);   // dataset 取出来是字符串，转成数字再比
   if (!id) return;
   const delBtn = e.target.closest('[data-action="delete"]');
   if (delBtn && item.contains(delBtn)) {
     deleteTodo(id);
+    return;                             // 删除后不要再往下走切换
   }
   toggleTodo(id);
 });
