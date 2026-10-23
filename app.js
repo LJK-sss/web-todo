@@ -47,6 +47,14 @@ function deleteTodo(id) {
   render();
 }
 
+// 编辑：map 出新的数组，只换这一条的文字
+function editTodo(id, text) {
+  todos = todos.map(t =>
+    t.id === id ? { ...t, text: text } : t);
+  save();
+  render();
+}
+
 // 切换：map + 展开，只换匹配的那一条
 function toggleTodo(id) {
   todos = todos.map(t =>
@@ -89,7 +97,14 @@ function render() {
     btn.dataset.action = 'delete';
     btn.textContent = '删除';
 
+    const editBtn = document.createElement('button');
+    editBtn.className = 'todo-edit-btn';
+    editBtn.type = 'button';
+    editBtn.dataset.action = 'edit';
+    editBtn.textContent = '编辑';
+
     li.appendChild(span);
+    li.appendChild(editBtn);
     li.appendChild(btn);
     list.appendChild(li);
   });
@@ -104,13 +119,58 @@ function render() {
   });
 }
 
+// 进入编辑：把这一条的文字换成输入框，回车保存，Esc 或点别处放弃
+function startEdit(id) {
+  const item = list.querySelector('li[data-id="' + id + '"]');
+  if (!item) return;
+  const span = item.querySelector('.todo-text');
+  if (!span) return;
+
+  const box = document.createElement('input');
+  box.className = 'todo-edit';
+  box.type = 'text';
+  box.value = span.textContent;
+  item.replaceChild(box, span);
+  box.focus();
+  box.select();
+
+  let done = false;
+
+  box.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      done = true;
+      const value = box.value.trim();
+      if (value === '') {
+        render();             // 空的不保存，恢复原样
+      } else {
+        editTodo(id, value);
+      }
+    } else if (e.key === 'Escape') {
+      done = true;
+      render();
+    }
+  });
+
+  box.addEventListener('blur', () => {
+    if (!done) render();      // 点到别处就放弃修改
+  });
+}
+
 // 事件委托：整个列表只挂一个监听，条目每次重画也不用重新绑
 list.addEventListener('click', (e) => {
   if (!(e.target instanceof Element)) return;
+  if (e.target.classList.contains('todo-edit')) return;   // 正在编辑，点输入框不算点条目
   const item = e.target.closest('li');
   if (!item || !list.contains(item)) return;
   const id = Number(item.dataset.id);   // dataset 取出来是字符串，转成数字再比
   if (!id) return;
+
+  const editBtn = e.target.closest('[data-action="edit"]');
+  if (editBtn && item.contains(editBtn)) {
+    startEdit(id);
+    return;
+  }
+
   const delBtn = e.target.closest('[data-action="delete"]');
   if (delBtn && item.contains(delBtn)) {
     deleteTodo(id);

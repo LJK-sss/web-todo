@@ -73,7 +73,7 @@ body {
 
 .todo-item {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 1fr auto auto;
   align-items: center;
   gap: 10px;
   padding: 10px 12px;
@@ -106,6 +106,27 @@ body {
   border: 1px solid #fecaca;
   border-radius: 6px;
   cursor: pointer;
+}
+
+.todo-edit-btn {
+  padding: 4px 10px;
+  font-size: 12px;
+  font-family: inherit;
+  color: #1d4ed8;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.todo-edit {
+  width: 100%;
+  padding: 4px 8px;
+  font-size: 14px;
+  font-family: inherit;
+  color: inherit;
+  border: 1px solid #93c5fd;
+  border-radius: 6px;
 }
 
 .todo-count {
