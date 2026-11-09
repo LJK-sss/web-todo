@@ -1,4 +1,4 @@
-﻿// 页面这一层：只负责取元素、绑事件、把数据渲染出来。
+// 页面这一层：只负责取元素、绑事件、把数据渲染出来。
 // 真正的业务逻辑都在 todo.ts 里。
 import {
   addTodo,
@@ -136,35 +136,39 @@ function startEdit(id: number): void {
 }
 
 // 事件委托：整个列表一个监听，条目重画也不用重新绑
-list.addEventListener('click', (e: Event) => {
-  const target = e.target;
-  if (!(target instanceof Element)) return; // target 不一定是 Element，先收窄
-  if (target.classList.contains('todo-edit')) return; // 正在编辑，点输入框不算点条目
+type Action = 'edit' | 'delete' | 'toggle';
 
+/** 从点击目标往上找 li；不是 li 就返回 null */
+function findItem(target: Element): HTMLLIElement | null {
   const item = target.closest('li');
-  if (!(item instanceof HTMLLIElement)) return;
-  if (!list.contains(item)) return;
+  return item instanceof HTMLLIElement ? item : null;
+}
 
-  const id = toTodoId(item.dataset.id); // 字符串 → 数字，坏值在这里挡掉
-  if (id === null) return;
+/** 判断这次点的是编辑、删除还是切换 */
+function resolveAction(target: Element): Action {
+  if (target.closest('[data-action="edit"]') instanceof HTMLElement) return 'edit';
+  if (target.closest('[data-action="delete"]') instanceof HTMLElement) return 'delete';
+  return 'toggle';
+}
 
-  const editBtn = target.closest('[data-action="edit"]');
-  if (editBtn instanceof HTMLElement && item.contains(editBtn)) {
+function runAction(action: Action, id: number): void {
+  if (action === 'edit') {
     startEdit(id);
     return;
   }
-
-  const delBtn = target.closest('[data-action="delete"]');
-  if (delBtn instanceof HTMLElement && item.contains(delBtn)) {
-    todos = removeTodo(todos, id);
-    save();
-    render();
-    return;
-  }
-
-  todos = toggleTodo(todos, id);
+  todos = action === 'delete' ? removeTodo(todos, id) : toggleTodo(todos, id);
   save();
   render();
+}
+
+list.addEventListener('click', (e: Event) => {
+  const target = e.target;
+  if (!(target instanceof Element)) return;
+  const item = findItem(target);
+  if (item === null) return;
+  const id = toTodoId(item.dataset.id);
+  if (id === null) return;
+  runAction(resolveAction(target), id);
 });
 
 form.addEventListener('submit', (e: SubmitEvent) => {

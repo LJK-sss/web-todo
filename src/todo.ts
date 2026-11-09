@@ -19,9 +19,7 @@ export const MAX_TEXT_LENGTH = 200;
 function normalizeText(input: unknown): string | null {
   if (typeof input !== 'string') return null; // null / undefined / 数字都在这里挡掉
   const value = input.trim();
-  if (value === '') return null;
-  if (value.length > MAX_TEXT_LENGTH) return null;
-  return value;
+  return value === '' ? null : value;
 }
 
 /** 添加：生成新数组，不改传进来的那个 */
