@@ -1,7 +1,7 @@
-// AI 生成的那一版，按审查意见修补之后的样子：
+﻿// AI 生成的那一版，按审查意见修补之后的样子：
 // 换掉弱断言、改正写反的期望值、把漏掉的维度补上（空值/类型/重复/超长/不改原数组/脏数据）。
 import { describe, expect, test } from 'vitest';
-import { addTodo, parseTodos, toggleTodo, type Todo } from '../src/todo.js';
+import { addTodo, parseTodos, toggleTodo, type Todo } from '../src/todo';
 
 // 每条用例自己造数据，不再共用一个顶层数组
 const base = (): Todo[] => [{ id: 1, text: '学习TS', completed: false }];
@@ -110,3 +110,4 @@ describe('parseTodos（localStorage 这个依赖入口）', () => {
     expect(list[0].id).toBe(1);
   });
 });
+

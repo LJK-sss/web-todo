@@ -1,5 +1,5 @@
-import { describe, expect, test } from 'vitest';
-import { addTodo, toggleTodo, type Todo } from '../src/todo.js';
+﻿import { describe, expect, test } from 'vitest';
+import { addTodo, toggleTodo, type Todo } from '../src/todo';
 
 describe('addTodo', () => {
   test('正常添加：长度 +1，存进去的就是输入的文字', () => {
@@ -41,3 +41,4 @@ describe('toggleTodo', () => {
     expect(next[0].completed).toBe(false);
   });
 });
+

@@ -1,4 +1,4 @@
-// 页面这一层：只负责取元素、绑事件、把数据渲染出来。
+﻿// 页面这一层：只负责取元素、绑事件、把数据渲染出来。
 // 真正的业务逻辑都在 todo.ts 里。
 import {
   addTodo,
@@ -11,7 +11,7 @@ import {
   toggleTodo,
   STORAGE_KEY,
   type Todo,
-} from './todo.js';
+} from './todo';
 
 const listRef = document.querySelector('#todoList');
 if (!(listRef instanceof HTMLUListElement)) throw new Error('页面里找不到 #todoList');
@@ -190,3 +190,4 @@ clearBtn.addEventListener('click', () => {
 });
 
 render();
+
