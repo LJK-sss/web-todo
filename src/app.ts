@@ -164,8 +164,10 @@ function runAction(action: Action, id: number): void {
 list.addEventListener('click', (e: Event) => {
   const target = e.target;
   if (!(target instanceof Element)) return;
+  if (target.classList.contains('todo-edit')) return; // 补回：编辑时点输入框不算点条目
   const item = findItem(target);
   if (item === null) return;
+  if (!list.contains(item)) return; // 补回：只认列表里的条目
   const id = toTodoId(item.dataset.id);
   if (id === null) return;
   runAction(resolveAction(target), id);
