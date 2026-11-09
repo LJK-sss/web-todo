@@ -1,4 +1,4 @@
-﻿// AI 生成的那一版，按审查意见修补之后的样子：
+// AI 生成的那一版，按审查意见修补之后的样子：
 // 换掉弱断言、改正写反的期望值、把漏掉的维度补上（空值/类型/重复/超长/不改原数组/脏数据）。
 import { describe, expect, test } from 'vitest';
 import { addTodo, parseTodos, toggleTodo, type Todo } from '../src/todo';

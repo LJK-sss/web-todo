@@ -1,4 +1,4 @@
-﻿import { describe, expect, test } from 'vitest';
+import { describe, expect, test } from 'vitest';
 import { addTodo, toggleTodo, type Todo } from '../src/todo';
 
 describe('addTodo', () => {
