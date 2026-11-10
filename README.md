@@ -1,6 +1,6 @@
-# 待办事项 V3.0
+# 待办事项 V4.0
 
-原生 HTML + TypeScript 写的待办列表，用 Vite 打包，用 Vitest 跑单测、用 ESLint 卡规范。
+原生 HTML + TypeScript + React 写的待办列表，用 Vite 打包，用 Vitest 跑单测、用 ESLint 卡规范。
 
 ## 功能
 
@@ -57,13 +57,18 @@ npm run lint       # 跑 ESLint（eslint src/）
 
 | 文件 | 说明 |
 | --- | --- |
-| `index.html` | 页面结构（Vite 的入口 HTML） |
-| `src/main.ts` | Vite 入口：引入样式与页面逻辑 |
+| `index.html` | 页面结构（Vite 的入口 HTML，只有一个 `#root`） |
+| `src/main.tsx` | React 挂载入口：引入样式，把 `<TodoApp />` 挂到 `#root` |
 | `src/style.css` | 样式 |
-| `src/todo.ts` | 数据层：接口定义 + 增删改查 + 脏数据解析 |
-| `src/app.ts` | 页面层：取元素、事件委托、渲染 |
+| `src/todo.ts` | 数据层（纯函数）：接口定义 + 增删改查 + 筛选 + 脏数据解析 |
+| `src/components/TodoApp.tsx` | 唯一持有 `todos` / `filter` 状态，向下传数据、收上行事件 |
+| `src/components/TodoForm.tsx` | 输入框 + 添加按钮，只负责收字和清空 |
+| `src/components/TodoList.tsx` | 列表容器，空状态与 `TodoItem` 的映射 |
+| `src/components/TodoItem.tsx` | 单条：切换、删除、就地编辑（编辑草稿是它自己的 state） |
 | `tests/todo.test.ts` | 手写单测（正常 + 边界） |
+| `tests/filter.test.ts` | 筛选与计数的单测 |
 | `tests/ai-generated.fixed.test.ts` | 审查后修补的单测（覆盖 9 维度） |
-| `vite.config.ts` | Vite 配置 |
+| `vite.config.ts` | Vite 配置（含 React 插件） |
 | `.eslintrc.cjs` | ESLint 配置 |
 | `tsconfig.json` | 类型检查用，`strict: true` + `noEmit: true` |
+

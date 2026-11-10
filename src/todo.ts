@@ -97,3 +97,17 @@ export function parseTodos(raw: string | null): Todo[] {
 export function serializeTodos(todos: readonly Todo[]): string {
   return JSON.stringify(todos);
 }
+
+/** 三个筛选视图 */
+export type Filter = 'all' | 'active' | 'done';
+
+/** 按筛选条件挑出要显示的条目（纯函数，组件只负责渲染） */
+export function filterTodos(todos: readonly Todo[], filter: Filter): Todo[] {
+  if (filter === 'all') return [...todos];
+  return todos.filter((t) => (filter === 'done' ? t.completed : !t.completed));
+}
+
+/** 已完成条数 */
+export function countCompleted(todos: readonly Todo[]): number {
+  return todos.reduce((n, t) => n + (t.completed ? 1 : 0), 0);
+}
