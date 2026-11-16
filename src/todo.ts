@@ -97,3 +97,21 @@ export function parseTodos(raw: string | null): Todo[] {
 export function serializeTodos(todos: readonly Todo[]): string {
   return JSON.stringify(todos);
 }
+
+/**
+ * 重排：把 fromId 挪到 toId 的位置。
+ * 先复制一份再动，传进来的数组不会被改；from/to 找不到或相同则原样返回。
+ */
+export function moveTodo(
+  todos: readonly Todo[],
+  fromId: number,
+  toId: number,
+): Todo[] {
+  const from = todos.findIndex((t) => t.id === fromId);
+  const to = todos.findIndex((t) => t.id === toId);
+  if (from < 0 || to < 0 || from === to) return [...todos];
+  const next: Todo[] = [...todos];
+  const [moved] = next.splice(from, 1);
+  next.splice(to, 0, moved);
+  return next;
+}

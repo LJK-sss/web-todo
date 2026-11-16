@@ -6,6 +6,7 @@ import {
   editTodo,
   parseTodos,
   removeTodo,
+  moveTodo,
   serializeTodos,
   toTodoId,
   toggleTodo,
@@ -13,7 +14,7 @@ import {
   type Todo,
 } from './todo';
 
-import { filterByKeyword, statsText } from './search';
+import { filterByKeyword, statsText, summarize, KEYWORD_KEY } from './search';
 
 const listRef = document.querySelector('#todoList');
 if (!(listRef instanceof HTMLUListElement)) throw new Error('页面里找不到 #todoList');
@@ -51,7 +52,9 @@ type Filter = 'all' | 'active' | 'done';
 
 let todos: Todo[] = parseTodos(localStorage.getItem(STORAGE_KEY));
 let filter: Filter = 'all';
-let keyword = '';
+let keyword: string = localStorage.getItem(KEYWORD_KEY) ?? '';
+
+search.value = keyword; // 刷新后把上次的搜索条件填回输入框
 
 function save(): void {
   localStorage.setItem(STORAGE_KEY, serializeTodos(todos));
@@ -96,7 +99,7 @@ function render(): void {
   }
 
   const done: number = todos.reduce((n, t) => n + (t.completed ? 1 : 0), 0);
-  count.textContent = statsText(shown, todos);
+  count.textContent = statsText(summarize(shown, todos));
   empty.style.display = shown.length === 0 ? 'block' : 'none';
   clearBtn.disabled = done === 0;
 
@@ -204,33 +207,53 @@ clearBtn.addEventListener('click', () => {
   render();
 });
 
-// 搜索：关键字是独立的视图状态，不写进 todos
+// 搜索：关键字是独立的视图状态，不写进 todos，但要单独持久化
 search.addEventListener('input', () => {
   keyword = search.value;
+  localStorage.setItem(KEYWORD_KEY, keyword);
   render();
 });
 
 // 拖拽排序：委托在列表上，靠 data-id 认条目
-let draggingId = -1;
+let dragging: number | null = null;
 
 list.addEventListener('dragstart', (e) => {
-  const item = (e.target as HTMLElement).closest('li');
-  draggingId = Number(item?.dataset.id);
+  const target = e.target;
+  if (!(target instanceof Element)) return; // 先收窄，别用 as
+  const item = target.closest('li');
+  if (!(item instanceof HTMLLIElement)) return;
+  const id = toTodoId(item.dataset.id);
+  if (id === null) return;
+  dragging = id;
+  item.classList.add('dragging');
+  if (e.dataTransfer) {
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', String(id)); // 留一份，跨浏览器更稳
+  }
 });
 
 list.addEventListener('dragover', (e) => {
-  e.preventDefault();
+  e.preventDefault(); // 不拦一下，drop 不会触发
+});
+
+list.addEventListener('dragend', () => {
+  const el = dragging === null ? null : list.querySelector(`li[data-id="${dragging}"]`);
+  if (el instanceof HTMLLIElement) el.classList.remove('dragging');
+  dragging = null;
 });
 
 list.addEventListener('drop', (e) => {
   e.preventDefault();
-  const item = (e.target as HTMLElement).closest('li');
-  const targetId = Number(item?.dataset.id);
-  const from = todos.findIndex((t) => t.id === draggingId);
-  const to = todos.findIndex((t) => t.id === targetId);
-  const [moved] = todos.splice(from, 1);
-  todos.splice(to, 0, moved);
+  const target = e.target;
+  if (!(target instanceof Element)) return;
+  const item = target.closest('li');
+  if (!(item instanceof HTMLLIElement)) return;
+  const toId = toTodoId(item.dataset.id);
+  if (dragging === null || toId === null) return; // 空值边界：没有起点或终点就不动
+  todos = moveTodo(todos, dragging, toId); // 重排返回新数组，再落盘
+  save();
   render();
+  dragging = null;
 });
 
 render();
