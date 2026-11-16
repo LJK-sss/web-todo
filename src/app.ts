@@ -13,8 +13,13 @@ import {
   type Todo,
 } from './todo';
 
+import { filterByKeyword, statsText } from './search';
+
 const listRef = document.querySelector('#todoList');
 if (!(listRef instanceof HTMLUListElement)) throw new Error('页面里找不到 #todoList');
+
+const searchRef = document.querySelector('#searchInput');
+if (!(searchRef instanceof HTMLInputElement)) throw new Error('页面里找不到 #searchInput');
 
 const inputRef = document.querySelector('#todoInput');
 if (!(inputRef instanceof HTMLInputElement)) throw new Error('页面里找不到 #todoInput');
@@ -38,6 +43,7 @@ const form: HTMLFormElement = formRef;
 const count: HTMLParagraphElement = countRef;
 const empty: HTMLParagraphElement = emptyRef;
 const clearBtn: HTMLButtonElement = clearRef;
+const search: HTMLInputElement = searchRef;
 
 const filterBtns = document.querySelectorAll<HTMLButtonElement>('.todo-filter');
 
@@ -45,6 +51,7 @@ type Filter = 'all' | 'active' | 'done';
 
 let todos: Todo[] = parseTodos(localStorage.getItem(STORAGE_KEY));
 let filter: Filter = 'all';
+let keyword = '';
 
 function save(): void {
   localStorage.setItem(STORAGE_KEY, serializeTodos(todos));
@@ -57,13 +64,15 @@ function readFilter(value: string | undefined): Filter {
 function render(): void {
   list.innerHTML = '';
 
-  const shown: Todo[] = todos.filter((t) =>
+  const filtered: Todo[] = todos.filter((t) =>
     filter === 'all' ? true : filter === 'done' ? t.completed : !t.completed);
+  const shown: Todo[] = filterByKeyword(filtered, keyword);
 
   for (const t of shown) {
     const li = document.createElement('li');
     li.className = 'todo-item';
     li.dataset.id = String(t.id);
+    li.draggable = true;
     if (t.completed) li.classList.add('done');
 
     const span = document.createElement('span');
@@ -87,8 +96,8 @@ function render(): void {
   }
 
   const done: number = todos.reduce((n, t) => n + (t.completed ? 1 : 0), 0);
-  count.textContent = `共 ${todos.length} 条，已完成 ${done} 条`;
-  empty.style.display = todos.length === 0 ? 'block' : 'none';
+  count.textContent = statsText(shown, todos);
+  empty.style.display = shown.length === 0 ? 'block' : 'none';
   clearBtn.disabled = done === 0;
 
   for (const btn of filterBtns) {
@@ -192,6 +201,35 @@ for (const btn of filterBtns) {
 clearBtn.addEventListener('click', () => {
   todos = clearCompleted(todos);
   save();
+  render();
+});
+
+// 搜索：关键字是独立的视图状态，不写进 todos
+search.addEventListener('input', () => {
+  keyword = search.value;
+  render();
+});
+
+// 拖拽排序：委托在列表上，靠 data-id 认条目
+let draggingId = -1;
+
+list.addEventListener('dragstart', (e) => {
+  const item = (e.target as HTMLElement).closest('li');
+  draggingId = Number(item?.dataset.id);
+});
+
+list.addEventListener('dragover', (e) => {
+  e.preventDefault();
+});
+
+list.addEventListener('drop', (e) => {
+  e.preventDefault();
+  const item = (e.target as HTMLElement).closest('li');
+  const targetId = Number(item?.dataset.id);
+  const from = todos.findIndex((t) => t.id === draggingId);
+  const to = todos.findIndex((t) => t.id === targetId);
+  const [moved] = todos.splice(from, 1);
+  todos.splice(to, 0, moved);
   render();
 });
 

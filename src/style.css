@@ -174,3 +174,19 @@ body {
   border-color: #e5e7eb;
   cursor: not-allowed;
 }
+
+.todo-search {
+  width: 100%;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-family: inherit;
+  color: inherit;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+}
+
+.todo-item.dragging {
+  opacity: .45;
+}
+
