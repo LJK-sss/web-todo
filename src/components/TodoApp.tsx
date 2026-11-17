@@ -26,7 +26,9 @@ const FILTERS: ReadonlyArray<{ value: Filter; label: string }> = [
 
 export default function TodoApp() {
   // 状态只有这一份，DOM 完全由它渲染出来
-  const [todos, setTodos] = useState<Todo[]>(() => loadTodos(localStorage.getItem(STORAGE_KEY)));
+  const [todos, setTodos] = useState<Todo[]>(() =>
+    loadTodos(localStorage.getItem(STORAGE_KEY)),
+  );
   const [filter, setFilter] = useState<Filter>('all');
 
   // 第二个消费 Context 的组件：标题栏要显示当前主题

@@ -27,7 +27,9 @@ const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   // 惰性初始化：只在挂载时读一次存储，不随渲染变化
-  const [theme, setTheme] = useState<Theme>(() => readTheme(localStorage.getItem(THEME_KEY)));
+  const [theme, setTheme] = useState<Theme>(() =>
+    readTheme(localStorage.getItem(THEME_KEY)),
+  );
 
   // 单 Effect：主题一变，同时更新 <html data-theme> 和存储
   useEffect(() => {
