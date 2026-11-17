@@ -1,25 +1,86 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
+/* 主题色全部收在这里：浅色是默认值，深色只是换一组变量 */
+:root {
+  --bg: #eef1f5;
+  --card: #ffffff;
+  --text: #1f2937;
+  --muted: #6b7280;
+  --faint: #9ca3af;
+  --line: #e5e7eb;
+  --item-bg: #f9fafb;
+  --item-done: #f3f4f6;
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-weak: #eff6ff;
+  --primary-line: #bfdbfe;
+  --danger: #b91c1c;
+  --danger-bg: #fef2f2;
+  --danger-line: #fecaca;
+}
+
+:root[data-theme='dark'] {
+  --bg: #0f1419;
+  --card: #161c24;
+  --text: #e5e7eb;
+  --muted: #94a3b8;
+  --faint: #64748b;
+  --line: #2a3441;
+  --item-bg: #1b232d;
+  --item-done: #151b23;
+  --primary: #3b82f6;
+  --primary-hover: #60a5fa;
+  --primary-weak: #1b2a42;
+  --primary-line: #2c4a72;
+  --danger: #f87171;
+  --danger-bg: #2a1b1d;
+  --danger-line: #4a2b2d;
+}
+
 body {
   font-family: "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
-  background: #eef1f5;
-  color: #1f2937;
+  background: var(--bg);
+  color: var(--text);
   line-height: 1.6;
   padding: 32px 16px;
+  transition: background .2s, color .2s;
 }
 
 .todo-app {
   max-width: 520px;
   margin: 0 auto;
   padding: 24px;
-  background: #ffffff;
+  background: var(--card);
   border-radius: 12px;
   box-shadow: 0 2px 12px rgba(15, 23, 42, .08);
+  transition: background .2s;
+}
+
+.todo-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
 }
 
 .todo-app h1 {
-  margin-bottom: 20px;
   font-size: 20px;
+}
+
+.theme-toggle {
+  padding: 6px 12px;
+  font-size: 12px;
+  font-family: inherit;
+  color: var(--text);
+  background: var(--item-bg);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.theme-toggle:hover {
+  border-color: var(--primary);
+  color: var(--primary);
 }
 
 .todo-form {
@@ -35,13 +96,14 @@ body {
   font-size: 14px;
   font-family: inherit;
   color: inherit;
-  border: 1px solid #d1d5db;
+  background: var(--card);
+  border: 1px solid var(--line);
   border-radius: 8px;
 }
 
 .todo-input:focus {
-  outline: 2px solid #93c5fd;
-  border-color: #2563eb;
+  outline: 2px solid var(--primary-line);
+  border-color: var(--primary);
 }
 
 .todo-add {
@@ -49,20 +111,20 @@ body {
   font-size: 14px;
   font-family: inherit;
   color: #ffffff;
-  background: #2563eb;
+  background: var(--primary);
   border: none;
   border-radius: 8px;
   cursor: pointer;
 }
 
 .todo-add:hover {
-  background: #1d4ed8;
+  background: var(--primary-hover);
 }
 
 .todo-empty {
   margin-bottom: 16px;
   font-size: 12px;
-  color: #6b7280;
+  color: var(--muted);
 }
 
 .todo-list {
@@ -77,8 +139,8 @@ body {
   align-items: center;
   gap: 10px;
   padding: 10px 12px;
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
+  background: var(--item-bg);
+  border: 1px solid var(--line);
   border-radius: 8px;
   cursor: pointer;
 }
@@ -89,11 +151,11 @@ body {
 }
 
 .todo-item.done {
-  background: #f3f4f6;
+  background: var(--item-done);
 }
 
 .todo-item.done .todo-text {
-  color: #9ca3af;
+  color: var(--faint);
   text-decoration: line-through;
 }
 
@@ -101,9 +163,9 @@ body {
   padding: 4px 10px;
   font-size: 12px;
   font-family: inherit;
-  color: #b91c1c;
-  background: #fef2f2;
-  border: 1px solid #fecaca;
+  color: var(--danger);
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-line);
   border-radius: 6px;
   cursor: pointer;
 }
@@ -112,9 +174,9 @@ body {
   padding: 4px 10px;
   font-size: 12px;
   font-family: inherit;
-  color: #1d4ed8;
-  background: #eff6ff;
-  border: 1px solid #bfdbfe;
+  color: var(--primary);
+  background: var(--primary-weak);
+  border: 1px solid var(--primary-line);
   border-radius: 6px;
   cursor: pointer;
 }
@@ -125,14 +187,15 @@ body {
   font-size: 14px;
   font-family: inherit;
   color: inherit;
-  border: 1px solid #93c5fd;
+  background: var(--card);
+  border: 1px solid var(--primary);
   border-radius: 6px;
 }
 
 .todo-count {
   margin-top: 16px;
   font-size: 12px;
-  color: #6b7280;
+  color: var(--muted);
 }
 
 .todo-bar {
@@ -140,7 +203,7 @@ body {
   gap: 6px;
   margin-top: 14px;
   padding-top: 14px;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--line);
 }
 
 .todo-filter,
@@ -148,29 +211,29 @@ body {
   padding: 5px 12px;
   font-size: 12px;
   font-family: inherit;
-  color: #374151;
-  background: #f3f4f6;
-  border: 1px solid #e5e7eb;
+  color: var(--text);
+  background: var(--item-bg);
+  border: 1px solid var(--line);
   border-radius: 6px;
   cursor: pointer;
 }
 
 .todo-filter.active {
-  color: #1d4ed8;
-  background: #eff6ff;
-  border-color: #93c5fd;
+  color: var(--primary);
+  background: var(--primary-weak);
+  border-color: var(--primary-line);
 }
 
 .todo-clear {
   margin-left: auto;
-  color: #b91c1c;
-  background: #fef2f2;
-  border-color: #fecaca;
+  color: var(--danger);
+  background: var(--danger-bg);
+  border-color: var(--danger-line);
 }
 
 .todo-clear:disabled {
-  color: #9ca3af;
-  background: #f3f4f6;
-  border-color: #e5e7eb;
+  color: var(--faint);
+  background: var(--item-done);
+  border-color: var(--line);
   cursor: not-allowed;
 }

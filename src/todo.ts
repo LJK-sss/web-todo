@@ -79,8 +79,11 @@ function isTodo(value: unknown): value is Todo {
   );
 }
 
-/** 把 localStorage 里取出的原文解析成 Todo[]，坏的整条丢弃 */
-export function parseTodos(raw: string | null): Todo[] {
+/**
+ * 安全读取：localStorage 里取出的原文 → Todo[]
+ * try-catch 兜住非法 JSON，Array.isArray 兜住"存了个对象/字符串"，坏条目整条丢弃
+ */
+export function loadTodos(raw: string | null): Todo[] {
   if (raw === null || raw === '') return [];
   let data: unknown;
   try {

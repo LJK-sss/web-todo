@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>双 Effect 复现（实验用，不进产品）</title>
+  <style>
+    body { font-family: "Microsoft YaHei", system-ui, sans-serif; padding: 24px; color: #1f2937; }
+    code { background: #f3f4f6; padding: 1px 4px; border-radius: 4px; }
+    #storage { margin-top: 12px; padding: 10px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-family: Consolas, monospace; font-size: 12px; word-break: break-all; }
+  </style>
+</head>
+<body>
+  <h2>双 Effect 持久化复现</h2>
+  <p>这就是任务 3 的靶子代码：<code>useState([])</code> + 一个读取 Effect + 一个写入 Effect。</p>
+  <div id="root"></div>
+  <div id="storage"></div>
+  <script type="module" src="/src/experiments/buggyPersist.tsx"></script>
+</body>
+</html>

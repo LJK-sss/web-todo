@@ -1,7 +1,7 @@
 // AI 生成的那一版，按审查意见修补之后的样子：
 // 换掉弱断言、改正写反的期望值、把漏掉的维度补上（空值/类型/重复/超长/不改原数组/脏数据）。
 import { describe, expect, test } from 'vitest';
-import { addTodo, parseTodos, toggleTodo, type Todo } from '../src/todo';
+import { addTodo, loadTodos, toggleTodo, type Todo } from '../src/todo';
 
 // 每条用例自己造数据，不再共用一个顶层数组
 const base = (): Todo[] => [{ id: 1, text: '学习TS', completed: false }];
@@ -88,14 +88,14 @@ describe('toggleTodo', () => {
   });
 });
 
-describe('parseTodos（localStorage 这个依赖入口）', () => {
+describe('loadTodos（localStorage 这个依赖入口）', () => {
   // 维度8（依赖）：存的东西不受我们控制
   test('不是合法 JSON 时返回空数组', () => {
-    expect(parseTodos('{坏数据')).toEqual([]);
+    expect(loadTodos('{坏数据')).toEqual([]);
   });
 
   test('解析出来不是数组时返回空数组', () => {
-    expect(parseTodos('{"a":1}')).toEqual([]);
+    expect(loadTodos('{"a":1}')).toEqual([]);
   });
 
   // 维度3（类型）：坏条目逐条丢弃，好的留下
@@ -105,7 +105,7 @@ describe('parseTodos（localStorage 这个依赖入口）', () => {
       { id: '2', text: '写作业', completed: false },
       null,
     ]);
-    const list = parseTodos(raw);
+    const list = loadTodos(raw);
     expect(list.length).toBe(1);
     expect(list[0].id).toBe(1);
   });

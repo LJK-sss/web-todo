@@ -1,13 +1,15 @@
 import { useEffect, useMemo, useState } from 'react';
 import TodoForm from './TodoForm';
 import TodoList from './TodoList';
+import ThemeToggle from './ThemeToggle';
+import { useTheme } from '../theme';
 import {
   addTodo,
   clearCompleted,
   countCompleted,
   editTodo,
   filterTodos,
-  parseTodos,
+  loadTodos,
   removeTodo,
   serializeTodos,
   toggleTodo,
@@ -24,10 +26,13 @@ const FILTERS: ReadonlyArray<{ value: Filter; label: string }> = [
 
 export default function TodoApp() {
   // 状态只有这一份，DOM 完全由它渲染出来
-  const [todos, setTodos] = useState<Todo[]>(() => parseTodos(localStorage.getItem(STORAGE_KEY)));
+  const [todos, setTodos] = useState<Todo[]>(() => loadTodos(localStorage.getItem(STORAGE_KEY)));
   const [filter, setFilter] = useState<Filter>('all');
 
-  // 数据变了就往 localStorage 写一份
+  // 第二个消费 Context 的组件：标题栏要显示当前主题
+  const { theme } = useTheme();
+
+  // 数据变了就往 localStorage 写一份（只有一个写入 Effect）
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, serializeTodos(todos));
   }, [todos]);
@@ -44,7 +49,10 @@ export default function TodoApp() {
 
   return (
     <div className="todo-app">
-      <h1>待办事项</h1>
+      <div className="todo-head">
+        <h1>待办事项</h1>
+        <ThemeToggle />
+      </div>
 
       <TodoForm onAdd={(text) => setTodos((prev) => addTodo(prev, text))} />
 
@@ -55,7 +63,7 @@ export default function TodoApp() {
         onEdit={(id, text) => setTodos((prev) => editTodo(prev, id, text))}
       />
 
-      <p className="todo-count">共 {todos.length} 条，已完成 {done} 条</p>
+      <p className="todo-count">共 {todos.length} 条，已完成 {done} 条 · 当前主题：{theme === 'dark' ? '深色' : '浅色'}</p>
 
       <div className="todo-bar">
         {FILTERS.map((f) => (
